@@ -21,6 +21,17 @@
             --accent-green-border: #a9d638;
         }
 
+        /* --- START: ANIMATION KEYFRAMES --- */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        /* --- END: ANIMATION KEYFRAMES --- */
+
         body {
             background-color: var(--background-dark); 
             font-family: 'Poppins', sans-serif;
@@ -34,6 +45,11 @@
             padding: 0 40px;
             width: 100%;
             box-sizing: border-box;
+            animation: fadeIn 0.8s ease-in-out; /* Applying the animation */
+        }
+        
+        .new-navbar .logo {
+            margin-left: 80px;
         }
 
         .new-navbar .logo img {
@@ -45,7 +61,7 @@
             -webkit-user-drag: none;
             user-select: none;
         }
-
+        
         .new-navbar .main-nav {
             background-color: var(--nav-container-bg);
             border-radius: var(--border-radius-pill);
@@ -53,7 +69,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            margin-left: 60px; 
+            margin-left: 40px; 
             border: 2px solid var(--accent-green-border);
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
@@ -86,10 +102,8 @@
             color: var(--text-dark);
         }
         
-        /* --- THIS IS THE NEW RULE --- */
         /* HOVER on the ACTIVE button: Black border effect */
         .new-navbar .nav-btn.active:hover {
-            /* We combine the outer subtle shadow with the new inner black border */
             box-shadow: inset 0 0 0 2px var(--text-dark), 0 3px 8px rgba(0,0,0,0.05);
         }
 
