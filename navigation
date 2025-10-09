@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Refined Navigation Bar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background-dark: #1c1c1c;
+            --nav-container-bg: #FFF9E6;
+            --nav-active-bg: #ffffff;
+            --accent-yellow: #e2e222;
+            --button-dark: #222222;
+            --text-primary: #333333;
+            --text-light: #ffffff;
+            --text-dark: #000000;
+            --border-color: #4a4a4a;
+            --border-radius-pill: 50px;
+            --transition-speed: 0.3s;
+            --accent-green-border: #a9d638;
+        }
+
+        body {
+            background-color: var(--background-dark); 
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding-top: 20px;
+        }
+
+        .new-navbar {
+            display: flex;
+            align-items: center;
+            padding: 0 40px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .new-navbar .logo img {
+            height: 40px;
+            width: 40px;
+            display: block;
+            border-radius: 50%;
+            object-fit: cover;
+            -webkit-user-drag: none;
+            user-select: none;
+        }
+
+        .new-navbar .main-nav {
+            background-color: var(--nav-container-bg);
+            border-radius: var(--border-radius-pill);
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 60px; 
+            border: 2px solid var(--accent-green-border);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .new-navbar .nav-btn {
+            background-color: transparent;
+            color: var(--text-primary);
+            border: none;
+            padding: 10px 24px;
+            border-radius: var(--border-radius-pill);
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all var(--transition-speed) ease-in-out;
+        }
+        
+        /* --- START: UPDATED HOVER & ACTIVE LOGIC --- */
+
+        /* Base ACTIVE state: Solid white background */
+        .new-navbar .nav-btn.active {
+            background-color: var(--nav-active-bg);
+            color: var(--text-dark);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+        }
+
+        /* HOVER on an INACTIVE button: White border effect */
+        .new-navbar .nav-btn:not(.active):hover {
+            background-color: transparent;
+            box-shadow: inset 0 0 0 2px var(--nav-active-bg);
+            color: var(--text-dark);
+        }
+        
+        /* --- THIS IS THE NEW RULE --- */
+        /* HOVER on the ACTIVE button: Black border effect */
+        .new-navbar .nav-btn.active:hover {
+            /* We combine the outer subtle shadow with the new inner black border */
+            box-shadow: inset 0 0 0 2px var(--text-dark), 0 3px 8px rgba(0,0,0,0.05);
+        }
+
+        /* --- END: UPDATED STYLES --- */
+
+
+        .new-navbar .action-buttons {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-left: auto; 
+        }
+
+        .new-navbar .btn {
+            border: none;
+            padding: 12px 28px;
+            border-radius: var(--border-radius-pill);
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: box-shadow var(--transition-speed) ease-in-out, background-color var(--transition-speed) ease-in-out;
+        }
+
+        .btn-light {
+            background-color: var(--accent-yellow);
+            color: var(--text-dark);
+            box-shadow: 0 0 0px var(--accent-yellow);
+        }
+        
+        .btn-light:hover {
+            box-shadow: 0 0 8px rgba(226, 226, 34, 0.8), 
+                        0 0 20px rgba(226, 226, 34, 0.5);
+        }
+
+        .btn-dark {
+            background-color: var(--button-dark);
+            color: var(--text-light);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 0 0px rgba(255, 255, 255, 0.4);
+        }
+        
+        .btn-dark:hover {
+            background-color: #333;
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <header class="new-navbar">
+        <div class="logo">
+            <a href="#"><img src="jjr.png" alt="Your Logo"></a>
+        </div>
+        
+        <nav class="main-nav">
+            <button class="nav-btn active">Support</button>
+            <button class="nav-btn">Business</button>
+            <button class="nav-btn">Contact us</button>
+        </nav>
+        
+        <div class="action-buttons">
+            <button class="btn btn-light">Learn more</button>
+            <a href="https://www.facebook.com/inventhrax" target="_blank" class="btn btn-dark">Follow us</a>
+        </div>
+    </header>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navButtons = document.querySelectorAll('.new-navbar .nav-btn');
+
+            navButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>
