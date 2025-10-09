@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estate Explore - Final Version</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+
+        :root {
+            /* Unified Color Palette */
+            --brand-color: #a9d638;
+            --background-color: #121212;
+            --card-background: #1c1c1c;
+            --glow-color: rgba(169, 214, 56, 0.1);
+            --border-color: rgba(169, 214, 56, 0.15);
+            --border-hover-color: rgba(169, 214, 56, 0.6);
+            --text-light-color: #f0f0f0;
+            --text-dark-color: #a0a0a0;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-light-color);
+            min-height: 100vh;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* --- NEW: Canvas for Hand-Drawn Lines --- */
+        #line-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1; /* Sits above background, below content */
+        }
+
+        .page-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 2rem;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .background-text-wrapper {
+            position: absolute;
+            top: 50%; left: 4rem;
+            transform: translateY(-45%);
+            z-index: 2; /* Above canvas */
+            pointer-events: none;
+        }
+
+        .background-text {
+            font-weight: 900;
+            font-size: 12vw;
+            color: white;
+            line-height: 0.85;
+            position: relative;
+        }
+        
+        .background-text > div {
+            opacity: 0;
+            transform: translateY(40px);
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+            animation: slideUpFadeIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .background-text div:first-child { position: relative; bottom: 40px; animation-delay: 0.5s; }
+        .background-text div:last-child { animation-delay: 0.7s; }
+
+        @keyframes slideUpFadeIn { to { opacity: 1; transform: translateY(0); } }
+
+        .main-content {
+            position: relative;
+            z-index: 2; /* Above canvas */
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideUpFadeIn 1s 1.2s forwards;
+        }
+
+        .info-card {
+            background-color: var(--card-background);
+            border-radius: 16px;
+            padding: 2.5rem;
+            border: 1px solid var(--border-color);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .info-card:hover {
+            border-color: var(--border-hover-color);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 0 15px var(--glow-color);
+        }
+        
+        .card-large, .card-small { width: 300px; }
+        .stat-number { font-size: 5rem; font-weight: 700; color: var(--brand-color); margin: 0; line-height: 1; text-shadow: 0 0 10px var(--glow-color); }
+        .card-large .stat-number { font-size: 6rem; }
+        .card-description { font-size: 1rem; color: var(--text-dark-color); margin: 0; }
+        .card-large .card-description { margin-top: 0.5rem; }
+        .card-small .stat-number { margin-top: 1rem; }
+        .card-small .card-description-bottom { margin-top: 0.5rem; color: var(--text-dark-color); }
+
+        @media (max-width: 1200px) { /* Responsive adjustments */ }
+        @media (max-width: 768px) { /* More responsive adjustments */ }
+    </style>
+</head>
+<body>
+
+    <!-- The new canvas element for our drawing animation -->
+    <canvas id="line-canvas"></canvas>
+
+    <div class="page-container">
+        
+        <div class="background-text-wrapper" aria-hidden="true">
+            <div class="background-text">
+                <div>Explore</div>
+                <div>Estate</div>
+            </div>
+        </div>
+    
+        <main class="main-content">
+            <div id="card1" class="info-card card-large"><h1 class="stat-number">950+</h1><p class="card-description">Assets Under Management</p></div>
+            <div id="card2" class="info-card card-small"><p class="card-description">Renowned for powering the backbone of premier properties...</p><h1 class="stat-number">32</h1><p class="card-description-bottom">Exclusive Delegators</p></div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const canvas = document.getElementById('line-canvas');
+            const ctx = canvas.getContext('2d');
+            let lines = [];
+
+            // Function to set canvas size
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+
+            // A utility to get element positions
+            function getElementCenter(selector) {
+                const el = document.querySelector(selector);
+                if (!el) return { x: 0, y: 0 };
+                const rect = el.getBoundingClientRect();
+                return { x: rect.left + rect.width / 2, y: rect.top + rect.height / 2 };
+            }
+            
+            // The Line drawing class
+            class AnimatedLine {
+                constructor(path, delay) {
+                    this.path = path;
+                    this.progress = 0;
+                    this.delay = delay;
+                    this.startTime = null;
+                    this.duration = 2000; // 2 seconds to draw
+                    this.wobblePoints = this.createWobble();
+                }
+
+                // Pre-calculate the 'wobbly' version of the path
+                createWobble() {
+                    const points = [];
+                    const wobbleAmount = 15;
+                    for (let i = 0; i < this.path.length; i++) {
+                        points.push({
+                            x: this.path[i].x + (Math.random() - 0.5) * wobbleAmount,
+                            y: this.path[i].y + (Math.random() - 0.5) * wobbleAmount
+                        });
+                    }
+                    return points;
+                }
+
+                draw() {
+                    if (this.progress === 0) return;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(this.wobblePoints[0].x, this.wobblePoints[0].y);
+
+                    const maxSegment = Math.floor((this.wobblePoints.length - 1) * this.progress);
+                    
+                    for (let i = 1; i <= maxSegment; i++) {
+                        ctx.lineTo(this.wobblePoints[i].x, this.wobblePoints[i].y);
+                    }
+                    
+                    // Draw the final partial segment smoothly
+                    if (this.progress < 1) {
+                         const remainder = ((this.wobblePoints.length - 1) * this.progress) % 1;
+                         const start = this.wobblePoints[maxSegment];
+                         const end = this.wobblePoints[maxSegment + 1];
+                         if (start && end) {
+                            ctx.lineTo(start.x + (end.x - start.x) * remainder, start.y + (end.y - start.y) * remainder);
+                         }
+                    }
+
+                    ctx.strokeStyle = "rgba(169, 214, 56, 0.8)";
+                    ctx.lineWidth = 2.5;
+                    ctx.shadowColor = "rgba(169, 214, 56, 1)";
+                    ctx.shadowBlur = 10;
+                    ctx.stroke();
+                    ctx.shadowBlur = 0; // Reset for performance
+                }
+
+                update(timestamp) {
+                    if (!this.startTime) this.startTime = timestamp;
+                    const elapsed = timestamp - this.startTime;
+
+                    if (elapsed > this.delay) {
+                        const drawElapsed = elapsed - this.delay;
+                        this.progress = Math.min(drawElapsed / this.duration, 1);
+                    }
+                }
+            }
+
+            function definePaths() {
+                const explorePos = getElementCenter(".background-text div:first-child");
+                const estatePos = getElementCenter(".background-text div:last-child");
+                const card1Pos = getElementCenter("#card1");
+                const card2Pos = getElementCenter("#card2");
+                const w = window.innerWidth;
+                const h = window.innerHeight;
+
+                lines = [
+                    new AnimatedLine([
+                        { x: explorePos.x - 100, y: explorePos.y },
+                        { x: w * 0.45, y: h * 0.3 },
+                        { x: card1Pos.x - 50, y: card1Pos.y - 150 },
+                        { x: card1Pos.x, y: card1Pos.y },
+                    ], 0),
+                    new AnimatedLine([
+                        { x: estatePos.x, y: estatePos.y + 100 },
+                        { x: w * 0.5, y: h * 0.85 },
+                        { x: card2Pos.x, y: card2Pos.y + 180 },
+                        { x: card2Pos.x - 150, y: card2Pos.y + 220 },
+                    ], 200),
+                    new AnimatedLine([
+                        { x: estatePos.x - 100, y: estatePos.y},
+                        { x: w * 0.6, y: h * 0.6 },
+                        { x: card2Pos.x - 180, y: card2Pos.y},
+                    ], 400),
+                ];
+            }
+            
+            // The main animation loop
+            function animate(timestamp) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let allDone = true;
+                lines.forEach(line => {
+                    line.update(timestamp);
+                    line.draw();
+                    if(line.progress < 1) allDone = false;
+                });
+                
+                if(!allDone) {
+                    requestAnimationFrame(animate);
+                }
+            }
+            
+            // --- INITIATION ---
+            resizeCanvas();
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                definePaths();
+            });
+            
+            // Start the line drawing animation after the other CSS animations finish
+            setTimeout(() => {
+                definePaths();
+                requestAnimationFrame(animate);
+            }, 2000); // 2s delay
+        });
+    </script>
+
+</body>
+</html>
