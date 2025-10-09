@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estate Explore - Final Version</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        /* FONT IMPORTS */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap');
+
+        /* COMBINED CSS VARIABLES - PAGE 1 */
+        :root {
+            /* Variables from Estate Page */
+            --brand-color: #a9d638;
+            --background-color: #121212;
+            --card-background: #1c1c1c;
+            --glow-color: rgba(169, 214, 56, 0.1);
+            --border-color: rgba(169, 214, 56, 0.15);
+            --border-hover-color: rgba(169, 214, 56, 0.6);
+            --text-light-color: #f0f0f0;
+            --text-dark-color: #a0a0a0;
+            --shadow-color: rgba(0, 0, 0, 0.5);
+
+            /* Variables from Navigation Bar */
+            --nav-container-bg: #FFF9E6;
+            --nav-active-bg: #ffffff;
+            --accent-yellow: #e2e222;
+            --button-dark: #222222;
+            --text-primary: #333333;
+            --text-light: #ffffff;
+            --text-dark: #000000;
+            --border-color-nav: #4a4a4a; /* Renamed to avoid conflict */
+            --border-radius-pill: 50px;
+            --transition-speed: 0.3s;
+            --accent-green-border: #a9d638;
+        }
+
+        /* --- START: ANIMATION KEYFRAME --- */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* --- CORE WEBSITE & SCROLLING STYLES --- */
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color); 
+            color: var(--text-light-color);
+            overflow: hidden; /* Critical for the page-by-page scroll effect */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .master-container {
+            position: relative;
+            height: 100vh;
+            width: 100%;
+        }
+        
+        .page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 100%;
+            transition: transform 1.0s cubic-bezier(0.76, 0, 0.24, 1);
+        }
+        
+        #page2, #page3 {
+            transform: translateY(100%);
+            background-color: var(--background-color);
+        }
+        
+        body.show-page-2 #page1 { transform: translateY(-100%); }
+        body.show-page-2 #page2 { transform: translateY(0); }
+
+        body.show-page-3 #page1 { transform: translateY(-200%); }
+        body.show-page-3 #page2 { transform: translateY(-100%); }
+        body.show-page-3 #page3 { transform: translateY(0); }
+
+        /* --- STYLES FOR THE ANIMATED NAVIGATION BAR --- */
+        header.new-navbar {
+            font-family: 'Poppins', sans-serif;
+            position: fixed;
+            top: 20px;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            padding: 0 40px;
+            box-sizing: border-box;
+            animation: fadeIn 0.8s ease-in-out;
+            transition: transform 1.0s cubic-bezier(0.76, 0, 0.24, 1);
+        }
+
+        body.show-page-2 header.new-navbar,
+        body.show-page-3 header.new-navbar {
+            transform: translateY(-150px);
+        }
+
+        header.new-navbar .logo {
+            margin-left: 80px;
+        }
+
+        header.new-navbar .logo img {
+            height: 40px;
+            width: 40px;
+            display: block;
+            border-radius: 50%;
+            object-fit: cover;
+            -webkit-user-drag: none;
+            user-select: none;
+        }
+        
+        header.new-navbar .main-nav {
+            background-color: var(--nav-container-bg);
+            border-radius: var(--border-radius-pill);
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 40px; 
+            border: 2px solid var(--accent-green-border);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        header.new-navbar .nav-btn {
+            background-color: transparent;
+            color: var(--text-primary);
+            border: none;
+            padding: 10px 24px;
+            border-radius: var(--border-radius-pill);
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all var(--transition-speed) ease-in-out;
+        }
+        
+        header.new-navbar .nav-btn.active {
+            background-color: var(--nav-active-bg);
+            color: var(--text-dark);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+        }
+
+        header.new-navbar .nav-btn:not(.active):hover {
+            background-color: transparent;
+            box-shadow: inset 0 0 0 2px var(--nav-active-bg);
+            color: var(--text-dark);
+        }
+        
+        header.new-navbar .nav-btn.active:hover {
+            box-shadow: inset 0 0 0 2px var(--text-dark), 0 3px 8px rgba(0,0,0,0.05);
+        }
+
+        header.new-navbar .action-buttons {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-left: auto; 
+        }
+
+        header.new-navbar .btn {
+            border: none;
+            padding: 12px 28px;
+            border-radius: var(--border-radius-pill);
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: box-shadow var(--transition-speed) ease-in-out, background-color var(--transition-speed) ease-in-out;
+        }
+
+        .btn-light {
+            background-color: var(--accent-yellow);
+            color: var(--text-dark);
+            box-shadow: 0 0 0px var(--accent-yellow);
+        }
+        .btn-light:hover {
+            box-shadow: 0 0 8px rgba(226, 226, 34, 0.8), 
+                        0 0 20px rgba(226, 226, 34, 0.5);
+        }
+
+        .btn-dark {
+            background-color: var(--button-dark);
+            color: var(--text-light);
+            border: 1px solid var(--border-color-nav);
+            box-shadow: 0 0 0px rgba(255, 255, 255, 0.4);
+        }
+        .btn-dark:hover {
+            background-color: #333;
+            box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+        }
+
+
+        /* --- STYLES FOR PAGE 1 (UNCHANGED) --- */
+        #page1 {
+            background-color: var(--background-color);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 2rem;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        #line-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+        #page1::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 25%;
+            width: 900px;
+            height: 900px;
+            background: radial-gradient(circle, var(--glow-color) 0%, transparent 60%);
+            transform: translate(-50%, -50%);
+            filter: blur(100px);
+            z-index: 0;
+            opacity: 0;
+            animation: fadeInGlow 2s 0.5s forwards, pulseGlow 8s infinite alternate ease-in-out;
+        }
+        @keyframes fadeInGlow { to { opacity: 1; } }
+        @keyframes pulseGlow { from { transform: translate(-50%, -50%) scale(0.95); } to { transform: translate(-50%, -50%) scale(1.05); } }
+        .background-text-wrapper { position: absolute; top: 50%; left: 2rem; transform: translateY(-45%); z-index: 1; pointer-events: none; }
+        .background-text { font-weight: 900; font-size: 10vw; color: white; line-height: 0.85; position: relative; z-index: 2; }
+        .background-text > div {
+            opacity: 0;
+            transform: translateY(40px);
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            animation: slideUpFadeIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .background-text div:first-child { position: relative; bottom: 40px; animation-delay: 1.5s; }
+        .background-text div:last-child { animation-delay: 1.7s; }
+        @keyframes slideUpFadeIn { to { opacity: 1; transform: translateY(0); } }
+        .blueprint-svg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: visible; z-index: 1; }
+        .blueprint-svg path, .blueprint-svg circle, .blueprint-svg line {
+            stroke: var(--border-hover-color);
+            stroke-width: 0.75;
+            fill: none;
+            stroke-linecap: round;
+            filter: drop-shadow(0 0 5px var(--glow-color));
+            animation: draw 2.5s 0.7s cubic-bezier(0.6, 0.01, 0.05, 0.95) forwards;
+        }
+        @keyframes draw { to { stroke-dashoffset: 0; } }
+        .main-content { position: relative; z-index: 10; display: flex; align-items: center; gap: 2rem; opacity: 0; transform: translateY(30px); animation: slideUpFadeIn 1s 2.2s forwards; }
+        .info-card { background-color: var(--card-background); border-radius: 16px; padding: 2.5rem; border: 1px solid var(--border-color); transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease; }
+        .info-card:hover { transform: translateY(-5px); border-color: var(--border-hover-color); box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 0 15px var(--glow-color); }
+        .card-large, .card-small { width: 300px; }
+        .stat-number { font-size: 5rem; font-weight: 700; color: var(--brand-color); margin: 0; line-height: 1; text-shadow: 0 0 10px var(--glow-color); }
+        .card-large .stat-number { font-size: 6rem; }
+        .card-description { font-size: 1rem; color: var(--text-dark-color); margin: 0; }
+        .card-large .card-description { margin-top: 0.5rem; }
+        .card-small .stat-number { margin-top: 1rem; }
+        .card-small .card-description-bottom { margin-top: 0.5rem; color: var(--text-dark-color); }
+
+        @media (max-width: 1200px) { .background-text { font-size: 15vw; } .main-content { flex-direction: column; } }
+        @media (max-width: 768px) {
+            #page1 { flex-direction: column; justify-content: center; padding: 2rem 1rem; }
+            #page1::before { top: 30%; left: 50%; }
+            .background-text-wrapper { position: relative; order: 1; top: auto; left: auto; transform: none; text-align: center; margin-bottom: 3rem; }
+            .background-text { font-size: 18vw; }
+            .main-content { order: 2; width: 100%; max-width: 400px; transform: translateY(0); }
+            .info-card { width: 100%; box-sizing: border-box; text-align: center; }
+        }
+
+        /* --- START: STYLES FOR PAGE 2 --- */
+        #page2 {
+            /* Scoped variables to avoid conflicts with page 1 */
+            --brand-color-p2: #a9d638;
+            --brand-color-light-p2: #c1f241;
+            --brand-color-dark-p2: #84a62c;
+            --chart-color-1-p2: #8a3ffc;
+            --chart-color-2-p2: #41f2c9;
+            --chart-color-3-p2: #6ea5ff;
+            --chart-color-4-p2: #f2c94c;
+            --background-color-p2: #000000;
+            --card-color-p2: rgba(28, 28, 28, 0.75);
+            --card-benefits-color-p2: rgba(34, 34, 34, 0.75);
+            --border-color-p2: rgba(169, 214, 56, 0.2);
+            --border-hover-color-p2: rgba(169, 214, 56, 0.6);
+            --border-benefits-color-p2: rgba(132, 166, 44, 0.4);
+            --text-primary-p2: #ffffff;
+            --text-secondary-p2: #b3b3b3;
+
+            /* Page 2 general styles */
+            background-color: var(--background-color-p2);
+            font-family: 'Inter', sans-serif;
+            color: var(--text-primary-p2);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-y: auto; /* Allow this page to scroll internally */
+        }
+        
+        #page2 #background-chart {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        #page2 .wrapper {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            align-items: stretch;
+            padding: 80px 40px;
+            box-sizing: border-box;
+        }
+
+        #page2 .content-block {
+            text-align: left;
+            background: var(--card-color-p2);
+            padding: 30px 40px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color-p2);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        #page2 .content-block:hover {
+            transform: translateY(-5px);
+            border-color: var(--border-hover-color-p2);
+        }
+
+        #page2 .animate-text-container { overflow: hidden; }
+        #page2 .animated-text { transform: translateY(110%); transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+        #page2 .animated-text.visible { transform: translateY(0); }
+        #page2 .animated-text.stagger { transition-delay: 0.15s; }
+
+        #page2 .graphic-container { height: 350px; position: relative; display: flex; justify-content: center; align-items: center; margin-bottom: 30px; flex-grow: 1; overflow: hidden; }
+        #page2 .shape { position: absolute; transition: transform 0.1s linear; }
+        #page2 .stripe { width: 250%; height: 90px; background: linear-gradient(to right, var(--brand-color-p2), var(--brand-color-dark-p2)); transform: rotate(-35deg); }
+        #page2 .sphere { width: 150px; height: 150px; background: radial-gradient(circle at 35% 35%, var(--brand-color-light-p2) 0%, var(--brand-color-dark-p2) 80%); border-radius: 50%; z-index: 2; }
+        
+        #page2 .chart-layout-container { display: flex; align-items: center; justify-content: center; gap: 50px; flex-wrap: wrap; }
+        #page2 .pie-chart { 
+            width: 200px; height: 200px; border-radius: 50%; position: relative; 
+            background-image: conic-gradient( 
+                var(--chart-color-1-p2) 0% 43%, var(--chart-color-2-p2) 43% 71%,
+                var(--chart-color-3-p2) 71% 86%, var(--chart-color-4-p2) 86% 100%
+            ); 
+            transform: rotateX(60deg) rotateZ(-30deg); 
+            box-shadow: 0 18px 25px rgba(0,0,0,0.4); 
+            flex-shrink: 0; 
+        }
+        #page2 .pie-chart::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; border-radius: 50%; box-shadow: inset 0 0 15px rgba(0,0,0,0.5); }
+        #page2 .chart-legend ul { list-style: none; padding: 0; margin: 0; font-size: 15px; text-align: left; }
+        #page2 .chart-legend li { display: flex; align-items: center; margin-bottom: 12px; color: var(--text-secondary-p2); }
+        #page2 .chart-legend .legend-color { width: 16px; height: 16px; border-radius: 4px; margin-right: 12px; flex-shrink: 0; }
+
+        #page2 .benefits-card { grid-column: 1 / -1; margin-top: 40px; background-color: var(--card-benefits-color-p2); border-color: var(--border-benefits-color-p2); padding: 80px 60px; text-align: center; }
+        #page2 .benefits-card .benefits-grid { display: flex; flex-direction: column; align-items: center; gap: 40px; }
+        #page2 .benefits-card .benefits-row { display: flex; justify-content: center; gap: 100px; width: 100%; flex-wrap: wrap; }
+        #page2 .benefits-card h2.benefits-title { font-size: 40px; font-weight: 700; margin-bottom: 60px; color: var(--brand-color-p2); text-shadow: 0 0 15px rgba(169, 214, 56, 0.25); }
+        #page2 .benefits-card .benefit-item { position: relative; padding-left: 25px; max-width: 300px; text-align: left; }
+        #page2 .benefits-card .benefit-item::before { content: '•'; color: var(--text-primary-p2); font-size: 16px; position: absolute; left: 0; top: 5px; }
+        #page2 .benefits-card .benefit-item strong { display: block; font-size: 20px; font-weight: 700; color: var(--text-primary-p2); margin-bottom: 10px; }
+        #page2 .benefits-card .benefit-item .description { font-size: 20px; line-height: 1.7; color: var(--text-secondary-p2); }
+
+        #page2 h2 { font-size: 32px; font-weight: 700; margin: 0 0 15px 0; letter-spacing: -0.5px; text-shadow: 0 0 15px rgba(169, 214, 56, 0.2); }
+        #page2 p { font-size: 16px; line-height: 1.7; margin: 0; color: var(--text-secondary-p2); max-width: 450px; }
+        #page2 .content-block:nth-child(2) p, #page2 .content-block:nth-child(2) h2 { margin-left: auto; margin-right: auto; text-align: center; }
+
+        @media (max-width: 900px) {
+            #page2 .wrapper { grid-template-columns: 1fr; gap: 40px; padding: 60px 20px; }
+            #page2 .benefits-card { margin-top: 0; padding: 60px 40px; }
+            #page2 .benefits-card .benefits-row { flex-direction: column; align-items: center; gap: 40px; }
+        }
+
+        /* --- START: STYLES FOR PAGE 3 --- */
+        #page3 {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 40px;
+            box-sizing: border-box;
+            background-color: #0a0a0a;
+        }
+
+        #page3 .page3-content {
+            max-width: 800px;
+        }
+
+        #page3 .page3-title {
+            font-size: 4rem;
+            font-weight: 900;
+            color: var(--brand-color);
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px var(--glow-color);
+        }
+
+        #page3 .page3-text {
+            font-size: 1.25rem;
+            color: var(--text-dark-color);
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+
+        #page3 .page3-button {
+            display: inline-block;
+            background-color: var(--brand-color);
+            color: var(--button-dark);
+            padding: 15px 35px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 8px rgba(169, 214, 56, 0.5);
+        }
+        #page3 .page3-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 15px rgba(169, 214, 56, 0.8), 0 0 25px rgba(169, 214, 56, 0.6);
+        }
+    </style>
+</head>
+<body>
+
+    <header class="new-navbar">
+        <div class="logo">
+            <a href="#"><img src="https://via.placeholder.com/40" alt="Your Logo"></a>
+        </div>
+        <nav class="main-nav">
+            <button class="nav-btn active">Support</button>
+            <button class="nav-btn">Business</button>
+            <button class="nav-btn">Contact us</button>
+        </nav>
+        <div class="action-buttons">
+            <button class="btn btn-light">Learn more</button>
+            <a href="https://www.facebook.com/inventhrax" target="_blank" class="btn btn-dark">Follow us</a>
+        </div>
+    </header>
+
+    <div class="master-container">
+        <section id="page1" class="page">
+            <canvas id="line-canvas"></canvas>
+            <div class="background-text-wrapper" aria-hidden="true">
+                <div class="background-text">
+                    <div>Explore</div>
+                    <div>Estate</div>
+                </div>
+                <svg class="blueprint-svg" viewBox="0 0 1000 350">
+                    <g transform="translate(0, -170)"> <circle cx="485" cy="265" r="70"/><line x1="485" y1="195" x2="485" y2="335"/><line x1="415" y1="265" x2="555" y2="265"/><path d="M600,190 H750 V340 H600"/> </g>
+                    <g transform="translate(0, 170)"> <path d="M-10,0 H120 V150 H-10 Z"/><path d="M210,75 h-90 M130,0 v150"/><path d="M420,150 L420,0 L300,0"/> </g>
+                </svg>
+            </div>
+            <main class="main-content">
+                <div id="card1" class="info-card card-large"> <h1 class="stat-number">950+</h1> <p class="card-description">Assets Under Management</p> </div>
+                <div id="card2" class="info-card card-small"> <p class="card-description">Renowned for powering the backbone of premier properties...</p> <h1 class="stat-number">32</h1> <p class="card-description-bottom">Exclusive Delegators</p> </div>
+            </main>
+        </section>
+
+        <section id="page2" class="page">
+            <canvas id="background-chart"></canvas>
+            <div class="wrapper">
+              <div class="content-block">
+                <div class="graphic-container">
+                  <div class="shape stripe"></div>
+                  <div class="shape sphere"></div>
+                </div>
+                <div class="animate-text-container">
+                  <h2 class="animated-text">Solid Foundations for Your Crypto Future</h2>
+                </div>
+                <div class="animate-text-container">
+                  <p class="animated-text stagger">Establish a solid foundation for your crypto journey through reliable and secure solutions.</p>
+                </div>
+              </div>
+              <div class="content-block">
+                <div class="graphic-container">
+                  <div class="chart-layout-container">
+                      <div class="pie-chart"></div>
+                      <div class="chart-legend">
+                        <ul>
+                          <li><span class="legend-color" style="background-color: var(--chart-color-1-p2);"></span>Furniture: 43%</li>
+                          <li><span class="legend-color" style="background-color: var(--chart-color-2-p2);"></span>Electronics: 28%</li>
+                          <li><span class="legend-color" style="background-color: var(--chart-color-3-p2);"></span>Home Décor: 15%</li>
+                          <li><span class="legend-color" style="background-color: var(--chart-color-4-p2);"></span>Toys: 14%</li>
+                        </ul>
+                      </div>
+                  </div>
+                </div>
+                 <div class="animate-text-container">
+                  <h2 class="animated-text">Portfolio Distribution</h2>
+                 </div>
+                 <div class="animate-text-container">
+                  <p class="animated-text stagger">A clear overview of asset allocation, providing insight into your investment strategy and diversification.</p>
+                 </div>
+              </div>
+              <div class="content-block benefits-card">
+                <div>
+                  <div class="animate-text-container">
+                    <h2 class="benefits-title animated-text">Benefit you get.</h2>
+                  </div>
+                  <div class="benefits-grid">
+                    <div class="benefits-row">
+                      <div class="animate-text-container">
+                        <div class="benefit-item animated-text stagger">
+                            <strong>Proven Security:</strong>
+                            <span class="description">Your assets are protected with industry-leading security protocols and robust infrastructure.</span>
+                        </div>
+                      </div>
+                      <div class="animate-text-container">
+                        <div class="benefit-item animated-text stagger">
+                            <strong>Data-Driven Clarity:</strong>
+                            <span class="description">Make informed decisions with transparent analytics and insightful portfolio tracking.</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="benefits-row">
+                       <div class="animate-text-container">
+                          <div class="benefit-item animated-text stagger">
+                              <strong>Future-Proof Growth:</strong>
+                              <span class="description">Invest in a platform that is constantly innovating and built for long-term scalability.</span>
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </section>
+
+        <section id="page3" class="page">
+            <div class="page3-content">
+                <h1 class="page3-title">Join the Revolution</h1>
+                <p class="page3-text">
+                    Become part of a forward-thinking community dedicated to building the future of decentralized finance. 
+                    Whether you're an experienced investor or just starting out, our platform provides the tools you need to succeed.
+                </p>
+                <a href="#" class="page3-button">Get Started Now</a>
+            </div>
+        </section>
+    </div>
+
+    <!-- SCRIPT FOR PAGE 1 ANIMATIONS -->
+    <script>
+         document.addEventListener("DOMContentLoaded", () => {
+            const animatedSvgElements = document.querySelectorAll('.blueprint-svg path, .blueprint-svg circle, .blueprint-svg line');
+            animatedSvgElements.forEach(el => { const length = el.getTotalLength ? el.getTotalLength() : (2 * Math.PI * (el.r?.baseVal.value || 0)); if (length) { el.style.strokeDasharray = length; el.style.strokeDashoffset = length; } });
+            const canvas = document.getElementById('line-canvas'); const ctx = canvas.getContext('2d'); let lines = [];
+            function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+            function getElementCenter(selector) { const el = document.querySelector(selector); if (!el) return { x: 0, y: 0, width: 0, height: 0 }; const rect = el.getBoundingClientRect(); return { x: rect.left, y: rect.top, width: rect.width, height: rect.height }; }
+            class AnimatedLine { constructor(config) { this.start = config.start; this.end = config.end; this.cp1 = config.cp1; this.cp2 = config.cp2; this.delay = config.delay; this.progress = 0; this.startTime = null; this.duration = 2800; }
+                draw() { if (this.progress <= 0) return; const gradient = ctx.createLinearGradient(this.start.x, this.start.y, this.end.x, this.end.y); gradient.addColorStop(0, "rgba(169, 214, 56, 0.2)"); gradient.addColorStop(0.5, "rgba(169, 214, 56, 0.9)"); gradient.addColorStop(1, "rgba(169, 214, 56, 0.2)"); ctx.beginPath(); ctx.moveTo(this.start.x, this.start.y); const t = this.progress; if (this.cp2) { const p01 = { x: this.start.x + (this.cp1.x - this.start.x) * t, y: this.start.y + (this.cp1.y - this.start.y) * t }; const p12 = { x: this.cp1.x + (this.cp2.x - this.cp1.x) * t, y: this.cp1.y + (this.cp2.y - this.cp1.y) * t }; const p23 = { x: this.cp2.x + (this.end.x - this.cp2.x) * t, y: this.cp2.y + (this.end.y - this.cp2.y) * t }; const p012 = { x: p01.x + (p12.x - p01.x) * t, y: p01.y + (p12.y - p01.y) * t }; const p123 = { x: p12.x + (p23.x - p12.x) * t, y: p12.y + (p23.y - p12.y) * t }; const pFinal = { x: p012.x + (p123.x - p012.x) * t, y: p012.y + (p123.y - p012.y) * t }; ctx.bezierCurveTo(p01.x, p01.y, p012.x, p012.y, pFinal.x, pFinal.y); } else { const cp1x = this.start.x + (this.cp1.x - this.start.x) * t; const cp1y = this.start.y + (this.cp1.y - this.start.y) * t; const cpx = this.cp1.x + (this.end.x - this.cp1.x) * t; const cpy = this.cp1.y + (this.end.y - this.cp1.y) * t; const x = cp1x + (cpx - cp1x) * t; const y = cp1y + (cpy - cp1y) * t; ctx.quadraticCurveTo(cp1x, cp1y, x, y); }
+                    ctx.strokeStyle = gradient; ctx.lineWidth = 3; ctx.shadowColor = "rgba(169, 214, 56, 0.7)"; ctx.shadowBlur = 10; ctx.stroke(); ctx.shadowBlur = 0; }
+                update(timestamp) { if (!this.startTime) this.startTime = timestamp; const elapsed = timestamp - this.startTime; if (elapsed > this.delay) { const drawElapsed = elapsed - this.delay; this.progress = Math.min(drawElapsed / this.duration, 1); } } }
+            function definePaths() { const exploreRect = getElementCenter(".background-text div:first-child"); const estateRect = getElementCenter(".background-text div:last-child"); const card1Rect = getElementCenter("#card1"); const card2Rect = getElementCenter("#card2"); const w = window.innerWidth; const h = window.innerHeight;
+                lines = [ new AnimatedLine({ start: { x: exploreRect.x + exploreRect.width, y: exploreRect.y + exploreRect.height / 2 }, end: { x: card1Rect.x, y: card1Rect.y + card1Rect.height * 0.25 }, cp1: { x: (exploreRect.x + exploreRect.width) + (card1Rect.x - (exploreRect.x + exploreRect.width)) * 0.3, y: (exploreRect.y + exploreRect.height / 2) - 150 }, delay: 0 }), new AnimatedLine({ start: { x: estateRect.x + estateRect.width, y: estateRect.y + estateRect.height / 2 }, end: { x: card2Rect.x, y: card2Rect.y + card2Rect.height * 0.75}, cp1: { x: (estateRect.x + estateRect.width) + (card2Rect.x - (estateRect.x + estateRect.width)) * 0.6, y: (card2Rect.y + card2Rect.height * 0.75) + 100 }, delay: 250 }), new AnimatedLine({ start: { x: estateRect.x + estateRect.width * 0.85, y: estateRect.y + estateRect.height + 20 }, end: { x: card2Rect.x + card2Rect.width * 0.8, y: card2Rect.y + card2Rect.height}, cp1: { x: card1Rect.x + card1Rect.width, y: h + 100 }, cp2: { x: card2Rect.x + card2Rect.width + 150, y: h}, delay: 350 }), new AnimatedLine({ start: { x: estateRect.x + estateRect.width * 0.85, y: estateRect.y + estateRect.height + 20 }, end: { x: w - 20, y: 20 }, cp1: { x: card1Rect.x, y: h + 150 }, cp2: { x: w, y: h * 0.35 }, delay: 400 }) ]; }
+            function animate(timestamp) { ctx.clearRect(0, 0, canvas.width, canvas.height); let allDone = true; lines.forEach(line => { line.update(timestamp); line.draw(); if(line.progress < 1) allDone = false; }); if(!allDone) { requestAnimationFrame(animate); } }
+            resizeCanvas(); window.addEventListener('resize', () => { resizeCanvas(); definePaths(); }); setTimeout(() => { definePaths(); requestAnimationFrame(animate); }, 3300);
+        });
+    </script>
+    
+    <!-- SCRIPT FOR SCROLLING -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let currentPage = 1;
+            let isAnimating = false;
+            const animationCooldown = 1200; 
+            const page2 = document.getElementById('page2');
+
+            const setPage = (pageNumber) => {
+                if (isAnimating) return;
+                currentPage = pageNumber;
+                isAnimating = true;
+
+                if (currentPage === 1) document.body.className = '';
+                else if (currentPage === 2) document.body.className = 'show-page-2';
+                else if (currentPage === 3) document.body.className = 'show-page-3';
+
+                setTimeout(() => { isAnimating = false; }, animationCooldown);
+            };
+
+            window.addEventListener('wheel', (event) => {
+                if (isAnimating) return;
+
+                const isScrollingDown = event.deltaY > 0;
+                const isScrollingUp = event.deltaY < 0;
+                
+                if (currentPage === 1 && isScrollingDown) {
+                    setPage(2);
+                } else if (currentPage === 2) {
+                    // Check if page 2 is scrolled to the top
+                    if (isScrollingUp && page2.scrollTop === 0) {
+                        setPage(1);
+                    }
+                    // Check if page 2 is scrolled to the bottom
+                    else if (isScrollingDown && (page2.scrollHeight - Math.ceil(page2.scrollTop)) <= page2.clientHeight) {
+                         setPage(3);
+                    }
+                } else if (currentPage === 3 && isScrollingUp) {
+                    setPage(2);
+                }
+            });
+        });
+    </script>
+
+    <!-- SCRIPT FOR NAVBAR ACTIVE STATE -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const navButtons = document.querySelectorAll('header.new-navbar .nav-btn');
+            navButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    navButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+
+    <!-- SCRIPTS FOR PAGE 2 -->
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const page2 = document.getElementById('page2');
+        if (!page2) return;
+
+        // --- TEXT REVEAL ANIMATION ON SCROLL ---
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    const textElements = entry.target.querySelectorAll('.animated-text');
+                    textElements.forEach(el => el.classList.add('visible'));
+                }
+            });
+        }, { root: null, threshold: 0.5 }); // Observe within the viewport
+        const animatedContainers = page2.querySelectorAll('.content-block');
+        animatedContainers.forEach((el) => observer.observe(el));
+
+        // --- GRAPHIC ROTATION ON SCROLL ---
+        const stripe = page2.querySelector('.stripe');
+        const sphere = page2.querySelector('.sphere');
+        const initialStripeRotation = -35;
+        page2.addEventListener('scroll', () => { // Listen for scroll on page2 itself
+            const scrollTop = page2.scrollTop;
+            const scrollRotation = scrollTop * 0.1;
+            if (stripe && sphere) {
+                stripe.style.transform = `rotate(${initialStripeRotation + scrollRotation}deg)`;
+                sphere.style.transform = `rotate(${scrollRotation}deg)`;
+            }
+        });
+
+        // --- CONTINUOUS BACKGROUND CHART ANIMATION ---
+        const canvas = page2.querySelector('#background-chart');
+        const ctx = canvas.getContext('2d');
+        let points = [];
+        let targetPoints = [];
+        let lastUpdate = 0;
+        const updateInterval = 2000;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initPoints();
+        }
+
+        function initPoints() {
+            points = [];
+            targetPoints = [];
+            const pointCount = Math.floor(canvas.width / 40);
+            for (let i = 0; i <= pointCount; i++) {
+                const x = i * 40;
+                const y = canvas.height * (0.4 + Math.random() * 0.4);
+                points.push({ x, y });
+                targetPoints.push({ x, y: canvas.height * (0.4 + Math.random() * 0.4) });
+            }
+        }
+        
+        function lerp(start, end, amt) {
+            return (1 - amt) * start + amt * end;
+        }
+
+        function animate(timestamp) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let i = 0; i < points.length; i++) {
+                points[i].y = lerp(points[i].y, targetPoints[i].y, 0.05);
+            }
+
+            if (timestamp - lastUpdate > updateInterval) {
+                lastUpdate = timestamp;
+                targetPoints.shift();
+                targetPoints.push({
+                    x: targetPoints[targetPoints.length - 1].x, 
+                    y: canvas.height * (0.4 + Math.random() * 0.4)
+                });
+                for (let i = 0; i < targetPoints.length; i++) {
+                    targetPoints[i].x = i * 40;
+                }
+            }
+            
+            ctx.strokeStyle = 'rgba(0, 255, 80, 0.1)';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < points.length; i++) {
+                ctx.beginPath();
+                ctx.moveTo(points[i].x, 0);
+                ctx.lineTo(points[i].x, canvas.height);
+                ctx.stroke();
+            }
+
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, points[0].y);
+            for (let i = 1; i < points.length; i++) {
+                ctx.lineTo(points[i].x, points[i].y);
+            }
+            ctx.strokeStyle = '#00ff50';
+            ctx.lineWidth = 2.5;
+            ctx.shadowColor = '#00ff50';
+            ctx.shadowBlur = 20;
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            requestAnimationFrame(animate);
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+        requestAnimationFrame(animate);
+      });
+    </script>
+</body>
+</html>
