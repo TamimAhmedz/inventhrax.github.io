@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estate Explore - Final Version</title>
+    <style>
+        @import url('https://fonts.googleapis.comcom/css2?family=Inter:wght@400;700;900&display=swap');
+
+        :root {
+            /* Unified Color Palette */
+            --brand-color: #a9d638;
+            --background-color: #121212;
+            --card-background: #1c1c1c;
+            --glow-color: rgba(169, 214, 56, 0.1);
+            --border-color: rgba(169, 214, 56, 0.15);
+            --border-hover-color: rgba(169, 214, 56, 0.6);
+            --text-light-color: #f0f0f0;
+            --text-dark-color: #a0a0a0;
+            --shadow-color: rgba(0, 0, 0, 0.5);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-light-color);
+            min-height: 100vh;
+            overflow: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        #line-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .page-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 2rem;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+        
+        .page-container::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 25%;
+            width: 900px; height: 900px;
+            background: radial-gradient(circle, var(--glow-color) 0%, transparent 60%);
+            transform: translate(-50%, -50%);
+            filter: blur(100px);
+            z-index: 0;
+            opacity: 0;
+            animation: fadeInGlow 2s 0.5s forwards, pulseGlow 8s infinite alternate ease-in-out;
+        }
+
+        @keyframes fadeInGlow { to { opacity: 1; } }
+        @keyframes pulseGlow {
+            from { transform: translate(-50%, -50%) scale(0.95); }
+            to { transform: translate(-50%, -50%) scale(1.05); }
+        }
+
+        .background-text-wrapper {
+            position: absolute;
+            top: 50%; left: 4rem;
+            transform: translateY(-45%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .background-text {
+            font-weight: 900;
+            font-size: 12vw;
+            color: white;
+            line-height: 0.85;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .background-text > div {
+            opacity: 0;
+            transform: translateY(40px);
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            animation: slideUpFadeIn 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .background-text div:first-child { position: relative; bottom: 40px; animation-delay: 1.5s; }
+        .background-text div:last-child { animation-delay: 1.7s; }
+
+        @keyframes slideUpFadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .blueprint-svg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            overflow: visible;
+            z-index: 1;
+        }
+
+        .blueprint-svg path, .blueprint-svg circle, .blueprint-svg line {
+            stroke: var(--border-hover-color);
+            stroke-width: 0.75;
+            fill: none;
+            stroke-linecap: round;
+            filter: drop-shadow(0 0 5px var(--glow-color));
+            animation: draw 2.5s 0.7s cubic-bezier(0.6, 0.01, 0.05, 0.95) forwards;
+        }
+
+        @keyframes draw { to { stroke-dashoffset: 0; } }
+
+        .main-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 2rem;
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideUpFadeIn 1s 2.2s forwards;
+        }
+
+        .info-card {
+            background-color: var(--card-background);
+            border-radius: 16px;
+            padding: 2.5rem;
+            border: 1px solid var(--border-color);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--border-hover-color);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.5), 0 0 15px var(--glow-color);
+        }
+
+        .card-large, .card-small { width: 300px; }
+        .stat-number { font-size: 5rem; font-weight: 700; color: var(--brand-color); margin: 0; line-height: 1; text-shadow: 0 0 10px var(--glow-color); }
+        .card-large .stat-number { font-size: 6rem; }
+        .card-description { font-size: 1rem; color: var(--text-dark-color); margin: 0; }
+        .card-large .card-description { margin-top: 0.5rem; }
+        .card-small .stat-number { margin-top: 1rem; }
+        .card-small .card-description-bottom { margin-top: 0.5rem; color: var(--text-dark-color); }
+
+        @media (max-width: 1200px) {
+            .background-text { font-size: 15vw; }
+            .main-content { flex-direction: column; }
+        }
+        @media (max-width: 768px) {
+            .page-container { flex-direction: column; justify-content: center; padding: 2rem 1rem; }
+            .page-container::before { top: 30%; left: 50%; }
+            .background-text-wrapper { position: relative; order: 1; top: auto; left: auto; transform: none; text-align: center; margin-bottom: 3rem; }
+            .background-text { font-size: 18vw; }
+            .main-content { order: 2; width: 100%; max-width: 400px; transform: translateY(0); }
+            .info-card { width: 100%; box-sizing: border-box; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="line-canvas"></canvas>
+
+    <div class="page-container">
+        
+        <div class="background-text-wrapper" aria-hidden="true">
+            <div class="background-text">
+                <div>Explore</div>
+                <div>Estate</div>
+            </div>
+            <svg class="blueprint-svg" viewBox="0 0 1000 350">
+                <g transform="translate(0, -170)">
+                    <circle cx="485" cy="265" r="70" /><line x1="485" y1="195" x2="485" y2="335" /><line x1="415" y1="265" x2="555" y2="265" /><path d="M600,190 H750 V340 H600" />
+                </g>
+                <g transform="translate(0, 170)">
+                    <path d="M-10,0 H120 V150 H-10 Z" /><path d="M210,75 h-90 M130,0 v150" /><path d="M420,150 L420,0 L300,0" />
+                </g>
+            </svg>
+        </div>
+    
+        <main class="main-content">
+            <div id="card1" class="info-card card-large">
+                <h1 class="stat-number">950+</h1>
+                <p class="card-description">Assets Under Management</p>
+            </div>
+    
+            <div id="card2" class="info-card card-small">
+                <p class="card-description">
+                    Renowned for powering the backbone of premier properties...
+                </p>
+                <h1 class="stat-number">32</h1>
+                <p class="card-description-bottom">Exclusive Delegators</p>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const animatedSvgElements = document.querySelectorAll('.blueprint-svg path, .blueprint-svg circle, .blueprint-svg line');
+            animatedSvgElements.forEach(el => {
+                const length = el.getTotalLength ? el.getTotalLength() : (2 * Math.PI * (el.r?.baseVal.value || 0));
+                if (length) {
+                    el.style.strokeDasharray = length;
+                    el.style.strokeDashoffset = length;
+                }
+            });
+
+            const canvas = document.getElementById('line-canvas');
+            const ctx = canvas.getContext('2d');
+            let lines = [];
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+
+            function getElementCenter(selector) {
+                const el = document.querySelector(selector);
+                if (!el) return { x: 0, y: 0 };
+                const rect = el.getBoundingClientRect();
+                return { x: rect.left, y: rect.top, width: rect.width, height: rect.height };
+            }
+            
+            class AnimatedLine {
+                constructor(path, delay) {
+                    this.path = path;
+                    this.progress = 0;
+                    this.delay = delay;
+                    this.startTime = null;
+                    this.duration = 2500; // Slower draw duration
+                    this.wavyPoints = this.createWavyPath();
+                }
+
+                createWavyPath() {
+                    const wavy = [];
+                    const amplitude = 15; // How wavy the line is
+                    const frequency = 0.05; // How frequent the waves are
+
+                    let totalLength = 0;
+                    for (let i = 0; i < this.path.length - 1; i++) {
+                        const start = this.path[i];
+                        const end = this.path[i + 1];
+                        const segmentLength = Math.hypot(end.x - start.x, end.y - start.y);
+                        const angle = Math.atan2(end.y - start.y, end.x - start.x);
+
+                        // Generate points along this segment
+                        for (let d = 0; d < segmentLength; d += 5) {
+                            const currentDist = totalLength + d;
+                            const offsetX = Math.sin(currentDist * frequency) * amplitude * Math.cos(angle + Math.PI / 2);
+                            const offsetY = Math.sin(currentDist * frequency) * amplitude * Math.sin(angle + Math.PI / 2);
+
+                            wavy.push({
+                                x: start.x + Math.cos(angle) * d + offsetX,
+                                y: start.y + Math.sin(angle) * d + offsetY,
+                            });
+                        }
+                        totalLength += segmentLength;
+                    }
+                    wavy.push(this.path[this.path.length - 1]); // Ensure it ends exactly at the last point
+                    return wavy;
+                }
+
+
+                draw() {
+                    if (this.progress === 0) return;
+                    
+                    ctx.beginPath();
+                    ctx.moveTo(this.wavyPoints[0].x, this.wavyPoints[0].y);
+
+                    const maxIndex = Math.floor((this.wavyPoints.length - 1) * this.progress);
+                    
+                    for (let i = 1; i <= maxIndex; i++) {
+                        ctx.lineTo(this.wavyPoints[i].x, this.wavyPoints[i].y);
+                    }
+                    
+                    ctx.strokeStyle = "rgba(169, 214, 56, 0.9)";
+                    ctx.lineWidth = 3;
+                    ctx.shadowColor = "rgba(169, 214, 56, 1)";
+                    ctx.shadowBlur = 12;
+                    ctx.stroke();
+                    ctx.shadowBlur = 0;
+                }
+
+                update(timestamp) {
+                    if (!this.startTime) this.startTime = timestamp;
+                    const elapsed = timestamp - this.startTime;
+
+                    if (elapsed > this.delay) {
+                        const drawElapsed = elapsed - this.delay;
+                        this.progress = Math.min(drawElapsed / this.duration, 1);
+                    }
+                }
+            }
+
+            function definePaths() {
+                const exploreRect = getElementCenter(".background-text div:first-child");
+                const estateRect = getElementCenter(".background-text div:last-child");
+                const card1Rect = getElementCenter("#card1");
+                const card2Rect = getElementCenter("#card2");
+                const w = window.innerWidth;
+                const h = window.innerHeight;
+
+                lines = [
+                    // Top line connecting to "950+" card
+                    new AnimatedLine([
+                        { x: exploreRect.x + exploreRect.width * 0.8, y: exploreRect.y + exploreRect.height * 0.6 },
+                        { x: w * 0.45, y: h * 0.35 },
+                        { x: w * 0.55, y: h * 0.15 },
+                        { x: card1Rect.x + card1Rect.width * 0.2, y: card1Rect.y },
+                    ], 0),
+
+                    // Bottom line connecting to "32" card
+                    new AnimatedLine([
+                        { x: estateRect.x + estateRect.width * 0.7, y: estateRect.y + estateRect.height * 0.8 },
+                        { x: w * 0.5, y: h * 0.95 },
+                        { x: card2Rect.x, y: card2Rect.y + card2Rect.height * 0.8},
+                    ], 200),
+                ];
+            }
+            
+            function animate(timestamp) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                let allDone = true;
+                lines.forEach(line => {
+                    line.update(timestamp);
+                    line.draw();
+                    if(line.progress < 1) allDone = false;
+                });
+                
+                if(!allDone) {
+                    requestAnimationFrame(animate);
+                }
+            }
+            
+            resizeCanvas();
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                definePaths(); // Recalculate paths on resize
+            });
+            
+            setTimeout(() => {
+                definePaths();
+                requestAnimationFrame(animate);
+            }, 3300);
+        });
+    </script>
+
+</body>
+</html>
