@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estate Explore - Final Version</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;700&display=swap" rel="stylesheet">
+    
+    <!-- ADDED FROM NEW CODE -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Playfair+Display:wght@700&family=Roboto:wght@400&family=Cinzel:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="shortcut icon" href="jjr.png" type="image/x-icon">
+
+    <style>
+        /* FONT IMPORTS */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;700&display=swap');
+
+        /* COMBINED CSS VARIABLES */
+        :root {
+            /* Variables from Estate Page */
+            --brand-color: #a9d638;
+            --background-color: #121212;
+            --card-background: #1c1c1c;
+            --glow-color: rgba(169, 214, 56, 0.1);
+            --border-color: rgba(169, 214, 56, 0.15);
+            --border-hover-color: rgba(169, 214, 56, 0.6);
+            --text-light-color: #f0f0f0;
+            --text-dark-color: #a0a0a0;
+            --shadow-color: rgba(0, 0, 0, 0.5);
+
+            /* Variables from Original Navigation Bar */
+            --nav-container-bg: #FFF9E6;
+            --nav-active-bg: #ffffff;
+            --accent-yellow: #e2e222;
+            --button-dark: #222222;
+            --text-primary: #333333;
+            --text-light: #ffffff;
+            --text-dark: #000000;
+            --border-color-nav: #4a4a4a; /* Renamed to avoid conflict */
+            --border-radius-pill: 50px;
+            --transition-speed: 0.3s;
+            --accent-green-border: #a9d638;
+
+            /* Variables for Page 3 Nav */
+            --primary-text-color: #e0e0e0;
+            --heading-color: #ffffff;
+            --accent-color: #a9d638;
+            --accent-shadow-color: rgba(169, 214, 56, 0.7);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color); 
+            color: var(--text-light-color);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* --- START: HEADER & LOGO STYLES --- */
+        .top-right-header {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1002; /* Positioned below the hamburger menu but above other content */
+            display: flex;
+            align-items: center;
+            gap: 12px; /* Space between logo and text */
+        }
+
+        .logo-container {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            transition: transform 0.3s ease;
+            flex-shrink: 0; /* Prevents the logo from shrinking if space is tight */
+        }
+
+        .logo-container:hover {
+            transform: scale(1.1);
+        }
+
+        .logo-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures the image covers the circle without distortion */
+        }
+        
+        .logo-text {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--text-light-color);
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.5);
+            user-select: none;
+        }
+        /* --- END: HEADER & LOGO STYLES --- */
+
+
+        /* --- START: STYLES FOR PAGE 3 --- */
+        #page3 {
+            background-color: #000;
+            overflow-y: auto;
+            height: 100%;
+            margin: 0;
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: var(--primary-text-color);
+            overflow-x: hidden;
+            user-select: none;          
+            -webkit-user-drag: none;    
+            transition: all 0.3s ease;
+        }
+
+        /* --- NAVIGATION BAR STYLES FOR PAGE 3 --- */
+        #page3 .navbar-wrapper {
+            background-color: #a9d638;
+            padding: 4px; 
+            border-radius: 50px;
+            width: fit-content;
+            margin: 100px auto 0; /* Adjusted margin to create space for the logo area */
+        }
+        
+        #page3 .color-strip {
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            width: fit-content;
+            margin: 0 auto;
+            padding: 8px;
+            border-radius: 50px;
+        }
+
+        #page3 .color-strip a {
+            color: var(--primary-text-color);
+            text-decoration: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            background: transparent;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        #page3 .color-strip a:hover, #page3 .color-strip a:focus {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--heading-color);
+        }
+
+        #page3 .color-strip a.active {
+            background-color: var(--accent-color);
+            color: #000;
+            box-shadow: 0 0 12px var(--accent-shadow-color);
+        }
+
+        #page3 .content {
+            display: block; 
+            min-height: auto; 
+            padding: 0; 
+            text-align: left; 
+            position: relative;
+            overflow: hidden; 
+            color: white; 
+            transition: opacity 0.2s ease-in-out;
+        }
+        
+        #page3 .content-fullscreen {
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            text-align: center;
+            font-size: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        #page3 .owner-section {
+            position: relative; width: 100%; display: flex; justify-content: center; padding: 60px 0;
+            background: url('thu.jpg') no-repeat center top; background-size: cover; z-index: 0; overflow: hidden;
+        }
+
+        #page3 .owner-container {
+            width: min(92vw, 800px); background: rgba(17,17,17,0.65); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); 
+            padding: 40px; border-radius: 20px; box-shadow: 0 0 40px rgba(255, 215, 0, 0.45); color: #f5f5f5;
+            display: flex; flex-direction: column; justify-content: space-between; min-height: 600px; text-align: center; position: relative; z-index: 1;
+        }
+
+        #page3 .owner-container * { user-select: none; -webkit-user-drag: none; -webkit-touch-callout: none; }
+        #page3 .owner-pic { width: 180px; height: 180px; border-radius: 50%; object-fit: cover; border: 5px solid #ffd700; box-shadow: 0 0 18px rgba(255,215,0,0.35); margin-bottom: 16px; align-self: center; }
+        #page3 .owner-container h1 { font-family: 'Playfair Display', serif; font-size: 2rem; color: #ffd700; margin: 8px 0; text-shadow: 0 0 12px rgba(255,215,0,0.35); }
+        #page3 .owner-container p { font-family: 'Roboto', sans-serif; color: #ddd; font-size: 1rem; line-height: 1.6; }
+        #page3 .social-text { font-weight: bold; margin-bottom: 12px; }
+        #page3 .social-links { display: flex; justify-content: center; gap: 28px; flex-wrap: wrap; }
+        #page3 .social-links a { width: 60px; height: 60px; border-radius: 50%; background: rgba(0,0,0,0.55); display: flex; align-items: center; justify-content: center; transition: 0.25s; border: 2px solid #000; }
+        #page3 .social-links a:hover { transform: scale(1.15); border-color: #ffd700; box-shadow: 0 0 18px rgba(255,215,0,0.45); }
+        #page3 .social-links svg { width: 44px; height: 44px; fill: #ffd700; }
+
+        /* --- GLOBAL SIDE PANEL STYLES --- */
+        .hamburger { 
+            position: fixed; top: 20px; left: 20px; width: 30px; height: 24px; cursor: pointer; z-index: 1003; 
+            display: flex; flex-direction: column; justify-content: space-between; 
+        }
+
+        .hamburger div { height: 4px; background-color: #ffffff; border-radius: 2px; }
+
+        .side-panel { 
+            position: fixed; top: 0; left: 0; width: 100%; max-width: 350px; height: 100vh; background-color: #1a1a1a; 
+            padding: 1.5rem; 
+            transform: translateX(-100%); 
+            transition: transform 0.3s ease; 
+            z-index: 1005;
+            display: flex; flex-direction: column; color: #eee; box-sizing: border-box;
+        }
+        
+        .side-panel.open { 
+            transform: translateX(0); 
+        }
+
+        .close-btn { align-self: flex-end; cursor: pointer; color: #a9d638; margin-bottom: 2rem; }
+        .close-btn svg { width: 28px; height: 28px; }
+
+        .side-panel nav { display: flex; flex-direction: column; gap: 1rem; }
+
+        .side-panel nav a { 
+            background-color: #2c2c2c; color: #fff; text-decoration: none; font-size: 1.1rem; font-weight: 600;
+            padding: 1rem; border-radius: 12px; display: flex; align-items: center; gap: 1rem; transition: background-color 0.2s ease;
+        }
+
+        .side-panel nav a:hover { background-color: #3a3a3a; }
+        .side-panel nav a svg { width: 24px; height: 24px; color: #a9d638; }
+
+        .overlay { 
+            position: fixed; top: 0; left: 0; height: 100vh; width: 100vw; background: rgba(0,0,0,0.5); 
+            opacity: 0; visibility: hidden; 
+            transition: opacity 0.3s ease; 
+            z-index: 1004;
+        }
+        .overlay.active { 
+            opacity: 1; 
+            visibility: visible; 
+        }
+
+        #page3 .top-text{text-align:center;padding:60px 20px;color:rgba(255,255,255,0.85);text-shadow:2px 2px 5px rgba(0,0,0,0.7); z-index: 2; position: relative;}
+        #page3 .top-text h1{margin:0;font-size:3em; font-family: 'Cinzel', serif;}
+        #page3 .top-text p:first-of-type{font-size:1.6em;margin:10px auto 0; font-family: 'Cinzel', serif;}
+        #page3 .top-text p:last-of-type{font-size:1.4em;margin:5px auto 0; font-family: 'Cinzel', serif;}
+        #page3 .content-area-inner{position:relative;padding:100px 40px 60px;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:30px; z-index: 2; position: relative;}
+        #page3 .card{background:rgba(0,0,0,0.4);border-radius:12px;overflow:hidden;box-shadow:0 4px 15px rgba(0,0,0,0.4);text-align:left;transition:transform 0.3s}
+        #page3 .card:hover{transform:translateY(-5px)}
+        #page3 .card img{width:100%;height:200px;object-fit:cover;display:block;pointer-events:none;-webkit-user-drag:none}
+        #page3 .card-content{padding:20px}
+        #page3 .card h2{font-size:1.5em;margin:0 0 10px}
+        #page3 .card p{font-size:1em;color:#e0e0e0;line-height:1.5;margin:0 0 10px}
+        #page3 .summary-creative{position:relative;margin:60px 40px;background:rgba(0,0,0,0.55);border-radius:18px;padding:50px 40px;box-shadow:0 10px 30px rgba(0,0,0,0.8);color:#fff;text-align:center; z-index: 2; position: relative;}
+        #page3 .summary-creative h2{font-size:2.2em;margin-bottom:40px;text-shadow:2px 2px 6px rgba(0,0,0,0.8);letter-spacing:1px}
+        #page3 .summary-columns{display:flex;flex-wrap:wrap;gap:40px;justify-content:center;text-align:left}
+        #page3 .summary-columns .col{flex:1 1 250px;min-width:250px;padding:0 10px;border-left:2px solid rgba(169, 214, 56, 0.2);}
+        #page3 .summary-columns .col:first-child{border-left:none}
+        #page3 .summary-columns .col p{font-size:1.1em;line-height:1.7;margin-bottom:20px}
+        #page3 .footer{background:black;color:white;text-align:center;padding:60px 20px;font-size:2em;font-weight:bold;letter-spacing:2px; z-index: 2; position: relative;}
+        #page3 .footer span{display:block;font-size:1em;margin-top:10px;opacity:0.9;font-weight:normal; color: #a9d638;}
+
+        .settings-box { background-color: #2a2a2a; border-radius: 12px; padding: 15px 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); display: flex; justify-content: space-between; align-items: center; width: 100%; box-sizing: border-box; }
+        .settings-label { display: flex; align-items: center; gap: 15px; }
+        .settings-label .icon { width: 24px; height: 24px; transition: color 0.3s ease-in-out, filter 0.3s ease-in-out; }
+        .settings-label .icon.glowing { filter: drop-shadow(0 0 7px #bdef5a); }
+        .settings-label .text { color: #ffffff; font-size: 1.1rem; font-weight: 600; }
+        .switch { position: relative; display: inline-block; width: 54px; height: 30px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #4a4a4a; transition: all 0.3s ease-in-out; border-radius: 30px; }
+        .slider:before { position: absolute; content: ""; height: 22px; width: 22px; left: 4px; bottom: 4px; background-color: #dcdcdc; box-shadow: 0 1px 3px rgba(0,0,0,0.2); transition: all 0.3s ease-in-out; border-radius: 50%; }
+        input:checked + .slider { background-color: #a9d638; }
+        input:checked + .slider:before { background-color: white; transform: translateX(24px); }
+
+        #page3 #information-content{margin:0;padding:0;background:linear-gradient(135deg,#e0f2f7,#9ff5d0);font-family:'Roboto',sans-serif;color:#333;-webkit-touch-callout:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
+        #page3 #information-content header{text-align:center;padding:2rem 1rem;background:linear-gradient(45deg,#2c7a7b,#319795);color:white;border-bottom:6px solid #285e61}
+        #page3 #information-content header h1{font-family:'Fredoka One',cursive;font-size:3rem;margin:0;letter-spacing:2px}
+        #page3 #information-content .container{display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:4rem;padding:4rem}
+        #page3 #information-content .card{background:white;border-radius:20px;padding:1.5rem;text-align:center;box-shadow:0 8px 15px rgba(0,0,0,0.1);position:relative;overflow:hidden;transition:transform .3s;display:flex;flex-direction:column;justify-content:flex-start}
+        #page3 #information-content .card:hover{transform:translateY(-10px)}
+        #page3 #information-content .card img{width:100%;height:200px;object-fit:cover;border-radius:15px;margin-bottom:1rem;-webkit-user-drag:none;-khtml-user-drag:none;-moz-user-drag:none;-o-user-drag:none;user-drag:none}
+        #page3 #information-content .card h2{color:#2c7a7b;margin-bottom:.5rem;font-size:1.3rem;font-family:'Fredoka One',cursive}
+        #page3 #information-content .card p{font-size:1rem;line-height:1.5;color:#000000;}
+        #page3 #information-content footer{text-align:center;padding:1.5rem;background:#319795;border-top:6px solid #285e61;color:#fff;font-weight:bold;font-family:'Fredoka One',cursive;letter-spacing:1px}
+        #page3 #information-content .card::after{content:"🕊️";font-size:4rem;position:absolute;bottom:-10px;right:-10px;opacity:.05;transform:rotate(-20deg)}
+        #page3 #information-content .summary-section{background:#f0f8f8;padding:4rem;margin-top:4rem;text-align:center;border-top:4px solid #319795;border-bottom:4px solid #319795}
+        #page3 #information-content .summary-section h2{font-family:'Fredoka One',cursive;font-size:2.5rem;color:#2c7a7b;margin-bottom:2rem}
+        #page3 #information-content .summary-section ul{list-style:none;padding:0;display:grid;grid-template-columns:repeat(auto-fit, minmax(320px, 1fr));gap:1rem;max-width:800px;margin:2rem auto 0;text-align:left}
+        #page3 #information-content .summary-section li{background:white;padding:1rem 1.5rem;border-radius:10px;box-shadow:0 4px 10px rgba(0,0,0,0.08);font-size:1.1rem;color:#444;display:flex;align-items:center}
+        #page3 #information-content .summary-section li::before{content:"✴";margin-right:10px;font-size:1.2rem}
+        
+        /* --- ALL MOBILE ONLY STYLES SHOULD BE HERE --- */
+        @media (max-width: 768px) {
+            body {
+                overflow-y: auto;
+            }
+
+            .master-container {
+                height: auto;
+            }
+            
+            /* Logo adjustment for mobile */
+            .top-right-header {
+                top: 15px;
+                right: 15px;
+                gap: 8px; /* Reduced gap for smaller screens */
+            }
+
+            .logo-container {
+                width: 50px;
+                height: 50px;
+            }
+
+            .logo-text {
+                font-size: 1.4rem; /* Adjusted font size for mobile */
+            }
+            
+            /* Navbar margin adjustment for mobile */
+            #page3 .navbar-wrapper {
+                margin-top: 85px; 
+            }
+
+            #page3 .content { background: url('phonee.jpeg') no-repeat center center; background-size: cover; }
+            #page3 .color-strip { gap: 0.5rem; font-size: 0.9rem; }
+            #page3 .color-strip a { padding: 0.5rem 1rem; }
+            #page3 .owner-container { padding: 30px 20px; min-height: auto; }
+            #page3 .owner-pic { width: 140px; height: 140px; }
+            #page3 .social-links { gap: 1.2rem; }
+            #page3 .social-links a { width: 50px; height: 50px; }
+            #page3 .social-links svg { width: 32px; height: 32px; }
+            #page3 .top-text h1 { font-size: 2.2em; }
+            #page3 .top-text p:first-of-type { font-size: 1.2em; }
+            #page3 .top-text p:last-of-type { font-size: 1em; }
+            #page3 .content-area-inner { padding: 60px 20px; gap: 20px; }
+            #page3 .summary-creative { margin: 60px 20px; padding: 40px 25px; }
+            #page3 .summary-creative h2 { font-size: 1.8em; }
+            #page3 .summary-columns .col { border-left: none; border-top: 1px solid rgba(169, 214, 56, 0.2); padding: 20px 0 0 0; }
+            #page3 .summary-columns .col:first-child { border-top: none; padding-top: 0; }
+            #page3 .footer { font-size: 1.5em; padding: 40px 20px; }
+
+            /* ---- CORRECTIONS FOR THE INFORMATION SECTION ON MOBILE ---- */
+            #page3 #information-content .container { 
+                padding: 2rem 1.5rem; 
+                gap: 2rem; 
+            }
+            #page3 #information-content .summary-section { 
+                padding: 2rem;
+                margin-top: 2rem;
+            }
+            #page3 #information-content header h1 { 
+                font-size: 2rem; 
+            }
+            #page3 #information-content .summary-section h2 { 
+                font-size: 1.8rem;
+                margin-bottom: 1.5rem;
+            }
+            #page3 #information-content .card,
+            #page3 #information-content .summary-section ul {
+                min-height: auto;
+            }
+        }
+
+    </style>
+</head>
+<body oncontextmenu="return false;" ondragstart="return false;" onselectstart="return false;">
+    
+    <!-- HEADER WITH LOGO AND TEXT -->
+    <div class="top-right-header">
+        <span class="logo-text">Inventhrax</span>
+        <div class="logo-container">
+            <!-- IMPORTANT: Make sure to replace 'jjr.png' with the actual path to your logo image -->
+            <img src="jjr.png" alt="Company Logo">
+        </div>
+    </div>
+
+    <!-- GLOBAL HAMBURGER MENU & SIDE PANEL -->
+    <div class="hamburger" id="hamburger"><div></div><div></div><div></div></div>
+    <aside class="side-panel" id="sidePanel">
+        <div class="close-btn" id="closeBtn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </div>
+        <nav>
+            <a href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                <span>Home</span>
+            </a>
+    
+            <div class="settings-box">
+                <div class="settings-label">
+                    <svg id="music-icon" class="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24" fill="currentColor">
+                        <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55c-2.21 0-4 1.79-4 4s1.79 4 4 4s4-1.79 4-4V7h4V3h-6z"/>
+                    </svg>
+                    <span id="music-status-text" class="text">Music On</span>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" id="music-toggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+    
+            <!-- NEW BUTTONS ADDED HERE -->
+            <a href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                <span>Business</span>
+            </a>
+            <a href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                <span>Contact Us</span>
+            </a>
+            <a href="https://www.facebook.com/inventhrax" target="_blank" rel="noopener noreferrer">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="17" y1="11" x2="23" y2="11"></line></svg>
+                <span>Follow</span>
+            </a>
+            
+            <a href="#">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                <span>About</span>
+            </a>
+        </nav>
+    </aside>
+    <div class="overlay" id="overlay"></div>
+
+    <div class="master-container">
+        <section id="page3" class="page">
+            
+            <!-- NAVIGATION BAR FOR PAGE 3 -->
+            <div class="navbar-wrapper">
+                <section class="color-strip">
+                    <a href="#" data-key="content" class="active">Content</a>
+                    <a href="#" data-key="informations">Informations</a>
+                    <a href="#" data-key="owner">Owner</a>
+                </section>
+            </div>
+            
+            <div style="width: 100%; height: 5px; background-color: black;"></div>
+
+            <section class="content" id="contentArea"></section>
+        </section>
+    </div>
+    
+    <!-- SCRIPT FOR GLOBAL UI -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- GLOBAL HAMBURGER/SIDE PANEL LOGIC (works on all screen sizes) ---
+            const hamburger = document.getElementById('hamburger');
+            const sidePanel = document.getElementById('sidePanel');
+            const closeBtn = document.getElementById('closeBtn');
+            const overlay = document.getElementById('overlay');
+            const sidePanelHomeButton = document.querySelector('.side-panel nav a:first-child');
+            
+            const openPanel = () => {
+                sidePanel.classList.add('open');
+                overlay.classList.add('active');
+            };
+
+            const closePanel = () => {
+                sidePanel.classList.remove('open');
+                overlay.classList.remove('active');
+            };
+            
+            hamburger.onclick = openPanel;
+            closeBtn.onclick = closePanel;
+            overlay.onclick = closePanel;
+
+            sidePanelHomeButton.onclick = (e) => {
+              e.preventDefault();
+              showSection('content'); 
+              closePanel();
+            };
+        });
+    </script>
+    
+    <!-- SCRIPT FOR PAGE 3 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const page3 = document.getElementById('page3'); if (!page3) return;
+
+            const ownerHTML = `
+            <section class="owner-section"> <div class="owner-container"> <div> <img class="owner-pic" src="6779.jpg" alt="Tamim Ahmed" /> <h1>Tamim Ahmed</h1> <p>Welcome to my website.I am the final boss.I am <strong>The Tamim Ahmed</strong>.</p> </div> <div style="margin-top:auto"> <p class="social-text">Well, here you can visit my social media:</p> <div class="social-links"> <a href="https://www.facebook.com/tamimahmedxearth" target="_blank"><svg viewBox="0 0 24 24"><path d="M13.5 22V13.5H16.5L17 10.5H13.5V8.25c0-.75.375-1.5 1.875-1.5H17V4.125A23.2 23.2 0 0014.25 4c-2.625 0-4.375 1.575-4.375 4.5V10.5H8.25v3h1.625V22h3.625z"/></svg></a> <a href="https://www.instagram.com/tamimahmedxearth" target="_blank"><svg viewBox="0 0 24 24"><path d="M7.75 2h8.5A5.75 5.75 0 0122 7.75v8.5A5.75 5.75 0 0116.25 22h-8.5A5.75 5.75 0 012 16.25v-8.5A5.75 5.75 0 017.75 2zm0 2A3.75 3.75 0 004 7.75v8.5A3.75 3.75 0 007.75 20h8.5a3.75 3.75 0 003.75-3.75v-8.5A3.75 3.75 0 0016.25 4h-8.5zM12 7a5 5 0 110 10 5 5 0 010-10zm0 2a3 3 0 100 6 3 3 0 000-6zm4.5-3a1.125 1.125 0 110 2.25 1.125 1.125 0 010-2.25z"/></svg></a> <a href="https://x.com/TamimAhmedz" target="_blank"><svg viewBox="0 0 24 24"><path d="M18.244 2H21.5l-7.55 8.635L22 22h-6.955l-5.45-7.06L3.5 22H.243l8.243-9.414L2 2h6.955l5.163 6.608L18.244 2zM16.955 20h1.822L7.14 4H5.196l11.759 16z"/></svg></a> <a href="https://discord.com/users/tamimahmedz" target="_blank"><svg viewBox="0 0 24 24"><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561 19.9 19.9 0 006.0667 3.0354.0777.0777 0 00.0842-.0276c.4676-.6304.8827-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057 13.2393 13.2393 0 01-1.872-.8996.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.119.099.246.1981.372.2924a.0766.0766 0 01-.006.1276 12.8737 12.8737 0 01-1.873.8994.0766.0766 0 00-.0407.106c.3604.698.7751 1.3628 1.222 1.9932a.076.076 0 00.0842.028 19.876 19.876 0 006.067-3.0354.0823.0823 0 00.0305-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.4189 0 1.3333-.9554 2.419-2.1569 2.419zm7.9748 0c-1.1826 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.4189 0 1.3333-.946 2.419-2.1568 2.419z"/></svg></a> </div> </div> </div> </section>`;
+            
+            const newContentHTML_Mobile = `<div class="top-text"><h1>Who Is He</h1><p>Is he a visionary? Maybe an artist? or perhaps a man who can imagine?</p><p>He Who knows Will Not Obey to Those,But to Only One</p></div> <div class="content-area-inner"> <div class="card"><img src="https://media2.thrillophilia.com/images/photos/000/178/603/original/1670915909_shutterstock_291252509.jpg?w=753&h=450&dpr=1.0"><div class="card-content"><h2>17 Places You Must Visit in Turkey</h2><p>Turkey is a land of contrasts, where ancient meets modern, Europe is separated from Asia and the East.</p></div></div> <div class="card"><img src="https://www.thetimes.com/imageserver/image/%2Fe7026f07-497e-4213-b61c-2dd58b474c01.jpg?crop=1600%2C900%2C0%2C0&format=webp&quality=9&resize=1500"><div class="card-content"><h2>Thailand’s Top 11 Gems</h2><p>Thailand is a vibrant country with stunning places and a fascinating history that draws people from all over.</p></div></div> <div class="card"><img src="https://images.pexels.com/photos/21014/pexels-photo.jpg"><div class="card-content"><h2>A Guide to Traveling the World</h2><p>Discovering hidden cafes in Kyoto, navigating bustling souks in Marrakech, or stargazing in the Atacama Desert—each journey unveils a unique story.</p></div></div> <div class="card"><img src="https://wildnordics.com/wp-content/uploads/2019/01/Dolomites_Italy.jpg"><div class="card-content"><h2>European Countryside</h2><p>Explore the charming villages, scenic landscapes, and rich history of Europe’s countryside regions.</p></div></div> <div class="card"><img src="https://media.istockphoto.com/id/1315260875/photo/aerial-view-over-a-tropical-forest-with-a-river-meandering-through-the-canopy-and-a-clouded.jpg?s=612x612&w=0&k=20&c=D-JOMC6tQVIJxNqmWwv8nOxagqqwBtsZK7dhAQePwgw="><div class="card-content"><h2>Amazon Rainforest Adventure</h2><p>The Amazon Rainforest offers unmatched biodiversity, thrilling adventures, and incredible wildlife encounters.</p></div></div> <div class="card"><img src="https://images.pexels.com/photos/8332567/pexels-photo-8332567.jpeg"><div class="card-content"><h2>Exploring Bali Beaches</h2><p>Bali is famous for its beaches, coral reefs, and vibrant culture, attracting millions of tourists yearly.</p></div></div> <div class="card"><img src="https://images.pexels.com/photos/313782/pexels-photo-313782.jpeg"><div class="card-content"><h2>New York City Lights</h2><p>New York City is a bustling metropolis filled with iconic landmarks, culture, and endless opportunities.</p></div></div> <div class="card"><img src="https://picfiles.alphacoders.com/290/290260.jpg"><div class="card-content"><h2>Sahara Desert Wonders</h2><p>The Sahara Desert is an endless landscape of dunes, sunsets, and unique cultural experiences.</p></div></div> <div class="card"><img src="https://wallpapers.com/images/high/kiyomizu-dera-temple-kyoto-japan-llk3nbdkm05wqn0c.webp"><div class="card-content"><h2>Japan Travel Guide</h2><p>Japan blends tradition and modernity, offering stunning landscapes, cuisine, and cultural experiences.</p></div></div> </div> <div class="summary-creative"><h2>Magic of Traveling</h2><div class="summary-columns"><div class="col"><p>Traveling exposes you to new histories, traditions, and worldviews.</p><p>Navigating unfamiliar places improves problem-solving and independence.</p><p>Seeing different art, architecture, and nature can spark fresh ideas.</p><p>Improves adaptability: You learn to adjust to different cultures, foods, and environments.</p></div><div class="col"><p>Meeting people from around the world helps you appreciate their unique ways of life.</p><p>Experiencing cultures firsthand challenges false assumptions.</p><p>You can create meaningful connections with people from different backgrounds.</p><p>Celebrates diversity: It helps you enjoy and value different customs, languages, and lifestyles.</p></div><div class="col"><p>Traveling provides a peaceful escape from daily routines and stress.</p><p>Each journey brings unique experiences and stories that last a lifetime.</p><p>Exploring new places with friends or family strengthens your connection and trust.</p><p>Seeing the beauty of the world helps you appreciate what you already have.</p></div></div></div><div class="footer">THE GATE WAY<span>- by you know who</span></div>`;
+            
+            const informationHTML = `<div id="information-content"> <header><h1>Voices of Gaza</h1></header> <section class="container"> <div class="card"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/75/Gaza_Skyline.jpg/800px-Gza_Skyline.jpg" alt="Gaza City"><h2>Ancient City</h2><p>Gaza is one of the oldest cities in the world, with a history spanning over 3,000 years.</p></div> <div class="card"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/79/Gaza_Strip_map.png/800px-Gaza_Strip_map.png" alt="Gaza Map"><h2>Small but Mighty</h2><p>The Gaza Strip is only about 41 km long, yet home to over 2 million people.</p></div> <div class="card"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/37/Gaza_Fish_Market.jpg/800px-Gaza_Fish_Market.jpg" alt="Gaza Market"><h2>Rich Culture</h2><p>Gaza is known for its vibrant markets, traditional crafts, and warm community life.</p></div> <div class="card"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/Gaza_Mediterranean.jpg/800px-Gaza_Mediterranean.jpg" alt="Gaza Coast"><h2>Beautiful Coast</h2><p>It has a scenic Mediterranean coastline with sandy beaches and rich marine life.</p></div> <div class="card"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Palestinian_children_Gaza.jpg/800px-Gaza_Children.jpg" alt="Gaza Children"><h2>Resilient People</h2><p>The people of Gaza show incredible strength, resilience, and hope despite hardships.</p></div> <div class="card"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Olive_tree.jpg/800px-Olive_tree.jpg" alt="Olive Tree"><h2>Symbol of Peace</h2><p>The olive tree is a symbol of peace and endurance, deeply rooted in Gaza’s culture.</p></div> <div class="card"><img src="https://upload.wikimedia.org/wikipedia/com/thumb/e/e3/Gaza_University.jpg/800px-Gaza_University.jpg" alt="Gaza Education"><h2>Education & Future</h2><p>Despite challenges, Gaza has universities, schools, and many aspiring young minds.</p></div> <div class="card"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Gaza_Reconstruction.jpg/800px-Gaza_Reconstruction.jpg" alt="Rebuilding Gaza"><h2>Hope for Tomorrow</h2><p>Communities continue to rebuild and dream of a peaceful and free future.</p></div> </section> <section class="summary-section"> <h2>Gaza at a Glance</h2> <ul><li>Ancient city with over 3,000 years of history.</li><li>A small but densely populated strip, home to over 2 million.</li><li>Rich cultural heritage with vibrant markets and crafts.</li><li>Features a beautiful Mediterranean coastline and beaches.</li><li>Inhabited by incredibly resilient and hopeful people.</li><li>The olive tree stands as a deep-rooted symbol of peace.</li><li>Committed to education with universities and schools.</li><li>A community that continuously rebuilds, fostering hope for peace.</li></ul> </section> <footer>Prayers for Peace and Freedom in Gaza</footer> </div>`;
+
+            const musicToggle = document.getElementById('music-toggle');
+            const musicStatusText = document.getElementById('music-status-text');
+            const musicIcon = document.getElementById('music-icon');
+            const colorOn = '#bdef5a', colorOff = '#6e6e6e';
+
+            function updateMusicStatus(isMusicOn) {
+                musicStatusText.textContent = isMusicOn ? 'Music On' : 'Music Off';
+                musicIcon.style.color = isMusicOn ? colorOn : colorOff;
+                isMusicOn ? musicIcon.classList.add('glowing') : musicIcon.classList.remove('glowing');
+            }
+            musicToggle.addEventListener('change', function() {
+                updateMusicStatus(this.checked);
+                localStorage.setItem('musicState', this.checked ? 'on' : 'off');
+                if (!this.checked) stopCurrentAudio();
+            });
+            const savedMusicState = localStorage.getItem('musicState');
+            musicToggle.checked = (savedMusicState !== 'off');
+            updateMusicStatus(musicToggle.checked);
+
+            const contentData = {
+                content: { html: newContentHTML_Mobile },
+                informations: { html: informationHTML },
+                owner: { html: ownerHTML }
+            };
+
+            let isInitialLoad = true;
+            
+            const contentArea = page3.querySelector('#contentArea');
+            const links = page3.querySelectorAll('.color-strip a');
+            
+            window.showSection = function(key, fromPopState = false) {
+                if (!fromPopState) history.pushState({ key: key }, '', `#${key}`);
+                
+                links.forEach(link => link.classList.remove('active'));
+                const sel = page3.querySelector(`.color-strip a[data-key="${key}"]`);
+                if(sel) {
+                    sel.classList.add('active');
+                }
+
+                const updateContent = () => {
+                    contentArea.innerHTML = contentData[key] ? contentData[key].html : 'Content not found';
+                    contentArea.style.opacity = 1;
+                };
+
+                if (isInitialLoad) { 
+                    updateContent(); 
+                    isInitialLoad = false; 
+                } 
+                else { 
+                    contentArea.style.opacity = 0; 
+                    setTimeout(updateContent, 200); 
+                }
+            }
+
+            links.forEach(link => { 
+                link.addEventListener('click', e => { 
+                    e.preventDefault(); 
+                    showSection(link.getAttribute('data-key')); 
+                }); 
+            });
+
+            window.addEventListener('popstate', (event) => { 
+                showSection((event.state && event.state.key) ? event.state.key : 'content', true); 
+            });
+            
+            // Set initial state
+            history.replaceState({ key: 'content' }, '', '#content');
+            showSection('content');
+        });
+    </script>
+</body>
+</html>
